@@ -3,7 +3,7 @@
 /* Magic Mirror
  * Module: MMM-Smartthings
  *
- * By BuzzKC
+ * By BuzzKC / CNBDragon
  * MIT Licensed.
  */
 
@@ -28,6 +28,12 @@ Module.register("MMM-Smartthings", {
 		"temperatureMeasurement"
 		"relativeHumidityMeasurement"
 		"motionSensor"
+		"doorControl"
+		"washerOperatingState"
+		"DryerOperatingState"
+		"dishwasherOperatingState"
+		"ovenOperatingState"
+		"waterSensor"
 
 		Other capabilities reference: https://docs.smartthings.com/en/latest/capabilities-reference.html
 	 */
@@ -36,6 +42,7 @@ Module.register("MMM-Smartthings", {
 
 	start: function() {
 		let self = this;
+		//
 
 		//Flag for check if module is loaded
 		this.loaded = false;
@@ -103,55 +110,65 @@ Module.register("MMM-Smartthings", {
       <span class="title">${this.config.title}</span>
       <ul class="sensors">
         ${deviceKeys
-			.map(sensorKey => {
-				const device = this.deviceStatuses[sensorKey];
-				let iconClass = 'zmdi';
-				let rowClass = '';
-				if (device.value === 'locked' || device.value === 'closed') {
-					iconClass = `${iconClass} zmdi-lock`;
-					rowClass = `${rowClass} ok`;
-				} else if (device.value === 'unlocked' || device.value === 'open') {
-					iconClass = `${iconClass} zmdi-lock-open`;
-					rowClass = `${rowClass} error`;
-				} else if (device.value === 'on') {
-					iconClass = `${iconClass} zmdi-power`;
-					rowClass = `${rowClass} error`;
-				} else if (device.value === 'off') {
-					iconClass = `${iconClass} zmdi-minus-circle-outline`;
-					rowClass = `${rowClass} ok`;
-				} else if (device.deviceType === 'temperatureMeasurement') {
-					if (device.value <= this.config.tempLowValue) {
-						iconClass = `sensor-temp-low fa fa-thermometer-empty`;	
-					} else if (device.value >= this.config.tempHighValue) {
-						iconClass = `sensor-temp-high fa fa-thermometer-full`;
-					} else {
-						iconClass = `sensor-temp fa fa-thermometer-half`;
-					}
-				} else if (device.deviceType === 'relativeHumidityMeasurement') {
-					iconClass = `${iconClass} zmdi-grain`;
-				} else if (device.deviceType === 'motionSensor') {
-					if(device.value === 'active') {
-						iconClass = `sensor-motion ${iconClass} zmdi-run`;
-					} else {
-						iconClass = `${iconClass} zmdi-run`;
-					}
+		.map(sensorKey => {
+			const device = this.deviceStatuses[sensorKey];
+			let iconClass = 'zmdi';
+			let rowClass = '';
+			if (device.value === 'locked' || device.value === 'closed') {
+				iconClass = `${iconClass} zmdi-lock`;
+				rowClass = `${rowClass} ok`;
+			} else if (device.value === 'unlocked' || device.value === 'open') {
+				iconClass = `${iconClass} zmdi-lock-open`;
+				rowClass = `${rowClass} error`;
+			} else if (device.value === 'on') {
+				iconClass = `${iconClass} zmdi-power`;
+				rowClass = `${rowClass} error`;
+			} else if (device.value === 'off') {
+				iconClass = `${iconClass} zmdi-minus-circle-outline`;
+				rowClass = `${rowClass} ok`;
+			} else if (device.value === 'run'){
+				iconClass = `${iconClass} zmdi-washing-machine`;
+				rowClass = `${rowClass} ok`;
+			} else if (device.value === 'stop'){
+				device.value2 = '';
+				iconClass = `${iconClass} zmdi-washing-machine`;
+				rowClass = `${rowClass} error`;
+			} else if (device.deviceType === 'temperatureMeasurement') {
+				if (device.value <= this.config.tempLowValue) {
+					iconClass = `sensor-temp-low fa fa-thermometer-empty`;	
+				} else if (device.value >= this.config.tempHighValue) {
+					iconClass = `sensor-temp-high fa fa-thermometer-full`;
+				} else {
+					iconClass = `sensor-temp fa fa-thermometer-half`;
 				}
-				
-				
-				return `
-                <li class="sensor ${rowClass}">
-                  <span class="sensor-icon ${device.deviceType}"></span>
-                  <span class="sensor-name">${device.deviceName}</span>
-                  <span class="sensor-status-icon ${iconClass}"></span>
-                  <span class="sensor-status-name">${device.value}</span>
-                </li>
-            `;
-			})
-			.join('')}
-		  </ul>
+			} else if (device.deviceType === 'relativeHumidityMeasurement') {
+				iconClass = `${iconClass} zmdi-grain`;
+			} else if (device.deviceType === 'motionSensor') {
+				if(device.value === 'active') {
+					iconClass = `sensor-motion ${iconClass} zmdi-run`;
+				} else {
+					iconClass = `${iconClass} zmdi-run`;
+				}
+			}
+			if(device.value2 == null){
+				device.value2 = "";
+			}
+			
+			return `
+			<li class="sensor ${rowClass}">
+			  <span class="sensor-icon ${device.deviceType}"></span>
+			  <span class="sensor-name">${device.deviceName}</span>
+			  <span class="sensor-status-icon ${iconClass}"></span>
+			  <span class="sensor-status-name">${device.value}</span>
+								<span class="sensor-status-name">${device.value2}</span>
+			</li>
 		`;
-		return wrapper;
-	},
+		})
+		.join('')}
+	  </ul>
+	`;
+	return wrapper;
+},
 
 	compareDeviceNames: function (a, b) {
 		// Use toUpperCase() to ignore character casing
@@ -211,9 +228,13 @@ Module.register("MMM-Smartthings", {
 		}
 
 		//messages to display in console from node_helper and other backend processes.
-		if (notification === "ConsoleOutput") {
+		//
+		//if you want the consle to be full of crap uncoment this
+		//
+		// 
+		/*if (notification === "ConsoleOutput") {
 			console.log("OUTPUT_LOG:");
 			console.log(payload);
-		}
+		}*/
 	}
 });

@@ -18,7 +18,7 @@ MagicMirror module that connects to the Samsung Smartthings api to display devic
 ### Setup the MagicMirror module
 ```bash
 cd ~/MagicMirror/modules
-git clone https://github.com/buzzkc/MMM-Smartthings.git
+git clone https://github.com/cnbdragon/MMM-Smartthings.git
 cd MMM-Smartthings
 npm install
 ```
@@ -55,7 +55,7 @@ var config = {
 | Option                | Description
 |-----------------      |-----------
 | `personalAccessToken` | *Required* Setup your personal access token at https://account.smartthings.com/tokens
-| `capabilities`        | *Required* An array of device capabilities to display statuses for. Supported capabilities: "switch", "contactSensor", "lock", "temperatureMeasurement", "relativeHumidityMeasurement", & "motionSensor"
+| `capabilities`        | *Required* An array of device capabilities to display statuses for. Supported capabilities: "switch", "contactSensor", "lock", "temperatureMeasurement", "relativeHumidityMeasurement", "motionSensor", "doorControl", "washerOperatingState", "DryerOperatingState",	"dishwasherOperatingState",	"ovenOperatingState", "waterSensor"
 | `updateInterval`      | *Optional* The number of milliseconds between updates<br>**Type:** `int`(milliseconds) <br>Default 30000 milliseconds (30 seconds)
 | `title`               | *Optional* The sub-heading title for device list
 | `excludedDeviceNames` | *Optional* An array of device names or strings contained in the device label, can be excluded by containing a given word or the full name. Be more specific if devices you want to see are getting excluded.
@@ -72,6 +72,7 @@ var config = {
 
 
 ## Thanks To
+* buzzkc for the original version of this module
 * MichMich for developing [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 * To the following for feedback and support sdetweil, cowboydude, & johnnyboy
 * Examples on aduyng's [MMM-IOTStatus project:](https://github.com/aduyng/MMM-IOTStatus)

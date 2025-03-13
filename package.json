@@ -1,9 +1,9 @@
 {
   "name": "MMM-Smartthings",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MagicMirror module that connects to the Smartthings api.",
   "main": "MMM-Smartthings.js",
-  "author": "BuzzKC",
+  "author": "BuzzKC, CNBDragon",
   "license": "MIT",
   "dependencies": {
     "smartthings-node": "0.0.4"

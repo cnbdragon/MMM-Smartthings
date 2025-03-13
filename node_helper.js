@@ -1,7 +1,7 @@
 /* Magic Mirror
  * Node Helper: MMM-Smartthings
  *
- * By BuzzKC
+ * By BuzzKC / CNBDragon
  * MIT Licensed.
  */
 
@@ -58,6 +58,7 @@ module.exports = NodeHelper.create({
 		this.st.devices.getDeviceCapabilityStatus(device.deviceId, "main", capability).then(deviceStatus => {
 
 			let statusType = null;
+			let statusType2 = null;
 			switch (capability) {
 				case 'switch':
 					statusType = deviceStatus.switch.value;
@@ -77,6 +78,34 @@ module.exports = NodeHelper.create({
 				case 'motionSensor':
 					statusType = deviceStatus.motion.value;
 					break;
+				case 'washerOperatingState':
+					statusType = deviceStatus.machineState.value;
+					statusType2 = deviceStatus.completionTime.value;
+					today = new Date();
+					date = new Date(statusType2);
+					date = date - today;
+					statusType2 = this.msToTime(date);
+					break;
+				case 'dryerOperatingState':
+					statusType = deviceStatus.machineState.value;
+					statusType2 = deviceStatus.completionTime.value;
+					today = new Date();
+					date = new Date(statusType2);
+					date = date - today;
+					statusType2 = this.msToTime(date);
+					break;
+				case 'dishwasherOperatingState': 
+					statusType = deviceStatus.machineState.value;
+					break;
+				case 'ovenOperatingState': 
+					statusType = deviceStatus.machineState.value;
+					break;
+				case 'doorControl':
+					statusType = deviceStatus.door.value;
+					break;
+				case 'waterSensor':
+					statusType = deviceStatus.water.value;
+					break;
 
 			}
 
@@ -86,7 +115,8 @@ module.exports = NodeHelper.create({
 					"deviceName": device.label,
 					"deviceTypeNAME": device.deviceTypeName,
 					"deviceType": capability,
-					"value": statusType
+					"value": statusType,
+					"value2": statusType2
 				});
 
 				this.sendSocketNotification('DEVICE_STATUS_FOUND', this.deviceStatuses);
@@ -101,5 +131,21 @@ module.exports = NodeHelper.create({
 			}
 		}
 		return false;
+	},
+
+	msToTime: function(duration) {
+		if(duration<0){
+			duration = 0;
+		}
+  		const milliseconds = parseInt((duration % 1000) / 100),
+    	seconds = Math.floor((duration / 1000) % 60),
+    	minutes = Math.floor((duration / (1000 * 60)) % 60),
+    	hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  		const hoursStr = (hours < 10) ? "0" + hours : hours;
+  		const minutesStr = (minutes < 10) ? "0" + minutes : minutes;
+  		const secondsStr = (seconds < 10) ? "0" + seconds : seconds;
+
+  		return hoursStr + ":" + minutesStr;// + ":" + secondsStr + "." + milliseconds;
 	}
 });
